@@ -33,7 +33,10 @@ get "/" do
 end
 
 post "/commits" do
-  data = JSON.parse(request.body.read)
+  data = JSON.parse(params[:payload])
+
+  # If this request has no payload or is otherwise malformed, bail.
+  halt 400 if !data
 
   commits = data["commits"]
 
