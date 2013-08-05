@@ -53,6 +53,9 @@ post "/commits" do
         REVIEWBOARD_API_REQUEST_URL % review_request_id,
         settings.username,
         settings.password)
+
+      $stdout.puts \
+        "Closing review request '#{review_request_id}' due to commit '#{commit['id']}'."
       resource.put({"status" => "submitted"},
         :content_type => "application/json")
     end
