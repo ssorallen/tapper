@@ -29,7 +29,7 @@ REVIEWBOARD_API_REQUEST_URL = "#{settings.reviewboard_url}api/review-requests/%i
 REVIEW_REGEX = Regexp.new("Review: #{settings.reviewboard_url}r/(\\d+)")
 
 get "/" do
-  status 204
+  "OK"
 end
 
 post "/commits" do
