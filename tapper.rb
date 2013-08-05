@@ -28,6 +28,10 @@ REVIEWBOARD_API_REQUEST_URL = "#{settings.reviewboard_url}api/review-requests/%i
 #   => #<MatchData "Review: https://rb.test.com/r/222" 1:"222">
 REVIEW_REGEX = Regexp.new("Review: #{settings.reviewboard_url}r/(\\d+)")
 
+get "/" do
+  status 204
+end
+
 post "/commits" do
   data = JSON.parse(request.body.read)
 
