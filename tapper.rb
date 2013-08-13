@@ -33,6 +33,11 @@ get "/" do
 end
 
 post "/commits" do
+  if settings.respond_to?(:secret_key) &&
+      settings.secret_key != params[:secret_key]
+    halt 403, 'Invalid secret key.'
+  end
+
   data = JSON.parse(params[:payload])
 
   # If this request has no payload or is otherwise malformed, bail.
