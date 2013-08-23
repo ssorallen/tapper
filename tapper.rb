@@ -28,6 +28,17 @@ REVIEWBOARD_API_REQUEST_URL = "#{settings.reviewboard_url}api/review-requests/%i
 #   => #<MatchData "Review: https://rb.test.com/r/222" 1:"222">
 REVIEW_REGEX = Regexp.new("Review: #{settings.reviewboard_url}r/(\\d+)")
 
+def commit_description(commit)
+  committer = commit["committer"]
+
+  <<-eos
+Closed by #{committer["name"]} <#{committer["email"]}> via Tapper with
+commit #{commit["id"]}[1].
+
+[1] #{commit["url"]}
+  eos
+end
+
 get "/" do
   "OK"
 end
@@ -59,9 +70,14 @@ post "/commits" do
         settings.username,
         settings.password)
 
-      $stdout.puts \
-        "Closing review request '#{review_request_id}' due to commit '#{commit['id']}'."
-      resource.put({"status" => "submitted"},
+      description = commit_description(commit)
+      $stdout.puts(description)
+
+      resource.put(
+        {
+          "description" => description,
+          "status" => "submitted"
+        },
         :content_type => "application/json")
     end
   end
