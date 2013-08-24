@@ -14,6 +14,11 @@ end
 
 REVIEWBOARD_API_REQUEST_URL = "#{settings.reviewboard_url}api/review-requests/%i/"
 
+# Matches a branch named just "master" and branches ending with "/master". The
+# branch coming from Github is usually "refs/head/master", but support plain old
+# "master" since the "ref" attribute in the API is not well-documented.
+MASTER_BRANCH_REGEX = /\/?master$/
+
 # Matches review comments appended to commit messages and returns the review
 # request ID as a string.
 #
@@ -58,6 +63,12 @@ post "/commits" do
 
   # If there aren't any commits, there is nothing to do
   halt 400 if !commits
+
+  ref = data["ref"]
+
+  # If these commits were not made to the master branch, ignore them. Commits
+  # to other branches should not close review requests.
+  halt 200 if ref.nil? || !MASTER_BRANCH_REGEX.match(ref)
 
   commits.each do |commit|
     match = REVIEW_REGEX.match(commit["message"])
